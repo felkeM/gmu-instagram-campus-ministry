@@ -1,0 +1,123 @@
+<?php
+
+function gmu_ig_ministry_block_info(){
+    $blocks['gmu_ig_ministry'] = array(
+        'info' => 'GMU Campus Ministry Instagram',
+        'cache' => DRUPAL_NO_CACHE,
+
+    );
+    return $blocks;
+
+}
+
+/**
+ * Implements hook_theme().
+ */
+function gmu_ig_ministry_theme($existing, $type, $theme, $path) {
+    if($type == 'module') {
+      return array(
+        'gmu_ig_ministry_block' => array(
+          'template' => 'gmu-ig-ministry-block',
+          'path' => "$path/theme",
+        ),
+      );
+    }
+    else {
+      return array();
+    }
+  }
+
+function gmu_ig_ministry_block_configure($delta = ''){
+    $form = array();
+    switch($delta){
+        case 'gmu_ig_ministry':
+            $form['ministry_name'] = array(
+                '#title' => 'Instagram Profile Name',
+                '#type'  => 'textfield',
+                '#default_value' => variable_get('ministry_name',''),
+                '#maxlength' => 255,
+                '#required' => TRUE,
+                '#description' => 'Enter Name of instagram'
+            );
+            $form['ministry_full_name'] = array(
+                '#title' => 'Instagram Full Name',
+                '#type'  => 'textfield',
+                '#default_value' => variable_get('ministry_full_name',''),
+                '#maxlength' => 255,
+                '#required' => TRUE,
+                '#description' => 'Enter Full Name of instagram'
+            );
+            $form['ministry_profile_image_url'] = array(
+                '#title' => 'Instagram Profile Image URL',
+                '#type'  => 'textfield',
+                '#default_value' => variable_get('ministry_profile_image_url',''),
+                '#maxlength' => 255,
+                '#required' => TRUE,
+                '#description' => 'Enter Profile Image URL of instagram'
+            );
+            $form['ministry_profile_url'] = array(
+                '#title' => 'Instagram Profile URL',
+                '#type'  => 'textfield',
+                '#default_value' => variable_get('ministry_profile_url',''),
+                '#maxlength' => 255,
+                '#required' => TRUE,
+                '#description' => 'Enter Profile URL of instagram'
+            );
+    }
+    return $form;
+}
+
+function gmu_ig_ministry_block_save($delta = '', $edit = array()){
+    switch($delta){
+        case 'gmu_ig_ministry':
+            variable_set('ministry_name',$edit['ministry_name']);
+            variable_set('ministry_full_name',$edit['ministry_full_name']);
+            variable_set('ministry_profile_image_url',$edit['ministry_profile_image_url']);
+            variable_set('ministry_profile_url',$edit['ministry_profile_url']);
+            break;
+    }
+}
+function gmu_ig_ministry_block_view($delta = ''){
+    $block = array();
+    switch($delta){
+        case 'gmu_ig_ministry' :
+            drupal_add_css(drupal_get_path('module', 'gmu_ig_ministry') .'/css/styles.css');
+            drupal_add_js(array('instagram' => array('ministry_name' => variable_get('ministry_name'))),'setting');
+            drupal_add_js(drupal_get_path('module', 'gmu_ig_ministry') . '/js/InstagramFeed.min.js');
+            drupal_add_js(drupal_get_path('module', 'gmu_ig_ministry') . '/js/custom.js');
+            $block['subject'] = '';
+            $block['content'] =  gmu_ig_ministry_block_content();
+            break;
+    }
+    return $block;
+}
+
+/**
+ * Implements hook_block_content().
+ */
+function gmu_ig_ministry_block_content() {
+    
+    // Profile vars
+    $profile_name_var = variable_get('ministry_name');
+    $profile_fullname_var = variable_get('ministry_full_name');
+    $profile_profile_image_var = variable_get('ministry_profile_image_url');
+    $profile_profile_url_var = variable_get('ministry_profile_url');
+    
+    // Profile pic
+    $profile_pic = "<a href='".$profile_profile_url_var."'><img src='" .$profile_profile_image_var. "' alt='Instagram profile avatar' /></a>";
+
+    // Profile Full Name
+    $profile_full_name = $profile_fullname_var;
+
+    // Profile Name
+    $profile_name = $profile_name_var;
+
+    $vars = array(
+      'profile_pic' => $profile_pic,
+      'profile_full_name' => $profile_full_name,
+      'profile_name' => $profile_name,
+    );
+    $content = theme('gmu_ig_ministry_block', $vars);
+  
+    return $content;
+  }

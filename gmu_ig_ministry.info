@@ -1,0 +1,5 @@
+name = "GMercyU Campus Ministry Instagram Feed"
+description = "Campus Ministry Instagram Feed Block"
+dependencies[] = block
+package = "GMU"
+core = 7.x
